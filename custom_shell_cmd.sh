@@ -1,9 +1,17 @@
 #!/bin/bash
 
+gogo_read_lines() {
+    saved_commands=()
+    INFILE=~/custom_shell_cmds/directory_shortcuts.txt
+    while read -r LINE
+        do
+        printf '%s\n' "$LINE"
+    done < "$INFILE"
+}
+
 # A hello world bash function
 gogo () {
 
-    echo "The script is located in: $script_dir"
     if [[ "$1" == "add" ]]; then
     # TODO add adding function
         echo "Im in $(pwd)"
@@ -15,6 +23,6 @@ gogo () {
         echo "ga"
     fi
 
-  saved_commands=()
-
 }
+
+gogo_read_lines

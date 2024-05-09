@@ -2,8 +2,8 @@
 
 # A hello world bash function
 gogo () {
-    # Read in the file
-    command=$1
+
+    echo "The script is located in: $script_dir"
     if [[ "$1" == "add" ]]; then
     # TODO add adding function
         echo "Im in $(pwd)"

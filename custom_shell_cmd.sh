@@ -5,13 +5,10 @@
 gogo_read_shortcuts() {
     shortcuts=() # shortcuts saved in structure ( name0 directory0 name1 directory1 etc )
     INFILE=~/custom_shell_cmds/directory_shortcuts.txt
+
     while read -ra LINE; do
-        # echo ${LINE[1]}
         shortcuts+=( "${LINE[@]}" ) 
     done < "$INFILE"
-    # for i in "${shortcuts[@]}"; do
-    # echo "$i"
-    # done
 }
 
 # Writes the directory shortcuts to shortcuts file
@@ -22,7 +19,7 @@ gogo_write_shortcuts() {
 
 gogo () {
     
-    protected_vars=( "add" "update" "remove") # These are special keywords that cannot be used as nicknames
+    local protected_vars=( "add" "update" "remove") # These are special keywords that cannot be used as nicknames
 
     if [[ "$1" == "add" ]]; then
     # Check that the string isn't empty
@@ -37,27 +34,48 @@ gogo () {
             return 1
         fi
 
+        # Make sure the nickname doesn't already exist
         if [[ " ${shortcuts[*]} " =~ [[:space:]]${2}[[:space:]] ]]; then 
             echo "gogo add error: name ${2} already exists. Please use \"gogo update\" to overwrite an existing nickname."
             return 1
         fi
 
-
+        # Add shortcut
         shortcuts+=( "$2" )
         shortcuts+=( "$(pwd)" )
-        # echo "${shortcuts[@]}"
         gogo_write_shortcuts
 
     elif [[ "$1" == "update" ]]; then
     # TODO add updating function
         echo "updating"
+
+        # Check that the string isn't empty
+        if [ -z "$2" ]; then 
+            echo "gogo update error: nickname cannot be empty."
+            return 1
+        fi
+
+        # Iterate over all the shortcuts and if name exists update the shortcut
+        local i=0
+        while [ "$i" -lt "${#shortcuts[@]}" ]; do
+            if [[ "${shortcuts[$i]}" == "$2" ]]; then
+                echo "updating ${2} from  ${shortcuts[$i + 1]} to $(pwd)"
+                shortcuts[$i + 1]="$(pwd)"
+                gogo_write_shortcuts
+                return 0
+            fi
+            i+=2
+        done
+
+        echo "gogo update error: name ${2} doesn't exists. Please use \"gogo add\" to add a new nickname."
+        return 1
     elif [[ "$1" == "remove" ]]; then
     # TODO add removing function
     echo "none"
     elif [[ "$1" == "list" ]]; then
     echo "no"
     else 
-        i=0
+        local i=0
         while [ "$i" -lt "${#shortcuts[@]}" ]; do
             if [[ "${shortcuts[$i]}" == "$1" ]]; then
                 echo "Changing directories to ${shortcuts[$i + 1]}"
@@ -73,4 +91,4 @@ gogo () {
 }
 
 gogo_read_shortcuts
-gogo add CS
+gogo update CSa

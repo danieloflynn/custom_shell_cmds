@@ -46,9 +46,6 @@ gogo () {
         gogo_write_shortcuts
 
     elif [[ "$1" == "update" ]]; then
-    # TODO add updating function
-        echo "updating"
-
         # Check that the string isn't empty
         if [ -z "$2" ]; then 
             echo "gogo update error: nickname cannot be empty."
@@ -70,8 +67,38 @@ gogo () {
         echo "gogo update error: name ${2} doesn't exists. Please use \"gogo add\" to add a new nickname."
         return 1
     elif [[ "$1" == "remove" ]]; then
-    # TODO add removing function
-    echo "none"
+        # TODO add removing function
+        # Check that the string isn't empty
+        if [ -z "$2" ]; then 
+            echo "gogo remove error: nickname cannot be empty."
+            return 1
+        fi
+
+        # Iterate over all the shortcuts and if name exists remove the shortcut
+        local i=0
+        local new_shortcuts=()
+        local found=0
+        while [ "$i" -lt "${#shortcuts[@]}" ]; do
+            echo "${shortcuts[$i + 1]}"
+            if [[ "${shortcuts[$i]}" == "$2" ]]; then
+                found=1
+                echo found it
+            else
+                new_shortcuts+=( "${shortcuts[$i]}" )
+                new_shortcuts+=( "${shortcuts[$i + 1]}" )
+            fi
+            i+=2
+        done
+        
+        if [ "$found" == 0 ]; then
+            echo "gogo remove error: name ${2} doesn't exist."
+        else 
+            shortcuts=( "${new_shortcuts[@]}" ) 
+            echo $shortcuts
+            gogo_write_shortcuts
+        fi
+
+
     elif [[ "$1" == "list" ]]; then
     echo "no"
     else 
@@ -91,4 +118,4 @@ gogo () {
 }
 
 gogo_read_shortcuts
-gogo update CSa
+gogo remove CS

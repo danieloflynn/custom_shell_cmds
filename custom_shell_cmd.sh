@@ -27,13 +27,18 @@ gogo () {
     if [[ "$1" == "add" ]]; then
     # Check that the string isn't empty
         if [ -z "$2" ]; then 
-            echo "gogo add error: nickname cannot be empty"
+            echo "gogo add error: nickname cannot be empty."
             return 1
         fi
         
         # Ensure it's not a protected word
-        if [[ protected_vars =~ [[:space:]]${2}[[:space:]] ]]; then 
-            echo "gogo add error: nickname cannot be empty"
+        if [[ " ${protected_vars[*]} " =~ [[:space:]]${2}[[:space:]] ]]; then 
+            echo "gogo add error: name ${2} is protected."
+            return 1
+        fi
+
+        if [[ " ${shortcuts[*]} " =~ [[:space:]]${2}[[:space:]] ]]; then 
+            echo "gogo add error: name ${2} already exists. Please use \"gogo update\" to overwrite an existing nickname."
             return 1
         fi
 
@@ -58,7 +63,7 @@ gogo () {
                 echo "Changing directories to ${shortcuts[$i + 1]}"
                 cd 
                 cd ${shortcuts[$i + 1]}
-                break
+                return 0
             fi
 
             i+=2
@@ -68,4 +73,4 @@ gogo () {
 }
 
 gogo_read_shortcuts
-gogo add dance
+gogo add CS
